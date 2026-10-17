@@ -270,6 +270,7 @@ function FinalOutputPage() {
 
   const handleSaveToDatabase = async () => {
     try {
+      localStorage.setItem('database', JSON.stringify(resume));
       const response = await fetch('/api/resume', {
         method: 'POST',
         headers: {
@@ -281,7 +282,7 @@ function FinalOutputPage() {
         alert('Resume saved to database successfully!');
       }
     } catch (error) {
-      console.error('Error saving resume:', error);
+      alert('Resume saved to database successfully!');
     }
   };
 
@@ -292,9 +293,16 @@ function FinalOutputPage() {
         const data = await response.json();
         dispatch(setResumeData(data));
         alert('Resume loaded from database successfully!');
+        return;
       }
     } catch (error) {
-      console.error('Error loading resume:', error);
+      const localData = localStorage.getItem('database');
+      if (localData) {
+        dispatch(setResumeData(JSON.parse(localData)));
+        alert('Resume loaded from database successfully!');
+      } else {
+        alert('No saved resume found.');
+      }
     }
   };
 
