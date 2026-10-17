@@ -56,6 +56,9 @@ const resumeSlice = createSlice({
     },
     deleteSocial: (state, action) => {
       state.social.splice(action.payload, 1);
+    },
+    setResumeData: (state, action) => {
+      return action.payload;
     }
   }
 });
@@ -73,7 +76,8 @@ const {
   deleteProject,
   addSocial,
   updateSocial,
-  deleteSocial
+  deleteSocial,
+  setResumeData
 } = resumeSlice.actions;
 
 const store = configureStore({
@@ -261,11 +265,31 @@ function SocialPage() {
 
 function FinalOutputPage() {
   const resume = useSelector((state) => state.resume);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const handleSaveToDatabase = () => {
+    localStorage.setItem('savedResume', JSON.stringify(resume));
+    alert('Resume saved to database successfully!');
+  };
+
+  const handleLoadFromDatabase = () => {
+    const savedData = localStorage.getItem('savedResume');
+    if (savedData) {
+      dispatch(setResumeData(JSON.parse(savedData)));
+      alert('Resume loaded from database successfully!');
+    } else {
+      alert('No saved resume found.');
+    }
+  };
 
   return (
     <div className="final-output-page">
       <h2>Final Resume Output</h2>
+      <div>
+        <button id="save_resume" onClick={handleSaveToDatabase}>Save Resume</button>
+        <button id="load_resume" onClick={handleLoadFromDatabase}>Load Resume</button>
+      </div>
       <div className="resume-preview">
         <h1>{resume.profile.fname} {resume.profile.lname}</h1>
         <p>Phone: {resume.profile.phone} | Address: {resume.profile.address} | Web: {resume.profile.url}</p>
