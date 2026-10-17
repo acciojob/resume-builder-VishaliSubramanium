@@ -268,18 +268,33 @@ function FinalOutputPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSaveToDatabase = () => {
-    localStorage.setItem('savedResume', JSON.stringify(resume));
-    alert('Resume saved to database successfully!');
+  const handleSaveToDatabase = async () => {
+    try {
+      const response = await fetch('/api/resume', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(resume),
+      });
+      if (response.ok) {
+        alert('Resume saved to database successfully!');
+      }
+    } catch (error) {
+      console.error('Error saving resume:', error);
+    }
   };
 
-  const handleLoadFromDatabase = () => {
-    const savedData = localStorage.getItem('savedResume');
-    if (savedData) {
-      dispatch(setResumeData(JSON.parse(savedData)));
-      alert('Resume loaded from database successfully!');
-    } else {
-      alert('No saved resume found.');
+  const handleLoadFromDatabase = async () => {
+    try {
+      const response = await fetch('/api/resume');
+      if (response.ok) {
+        const data = await response.json();
+        dispatch(setResumeData(data));
+        alert('Resume loaded from database successfully!');
+      }
+    } catch (error) {
+      console.error('Error loading resume:', error);
     }
   };
 
